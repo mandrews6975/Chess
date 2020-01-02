@@ -36,36 +36,36 @@
           </button>
         </div>
         <div class="col-4">
-          <h6 class="text-white">Player 1:</h6>
+          <h6 class="text-white">White:</h6>
           <div class="input-group mb-1">
             <div class="input-group-prepend">
-              <button id="dropdown_player_1_type" class="btn btn-danger text-white dropdown-toggle" type="button" data-toggle="dropdown">Human</button>
+              <button id="dropdown_white_type" class="btn btn-danger text-white dropdown-toggle" type="button" data-toggle="dropdown">Human</button>
               <div class="dropdown-menu">
                 <a class="dropdown-item" onclick="switchPlayer1Human()">Human</a>
                 <a class="dropdown-item" onclick="switchPlayer1Engine()">Engine</a>
               </div>
             </div>
-            <input id="input_player_1_name" type="text" class="form-control" placeholder="Name">
-            <div id="div_player_1_engine" class="custom-file custom" style="display: none">
-              <input type="file" class="custom-file-input" id="input_player_1_engine">
-              <label class="custom-file-label" for="input_player_1_engine">Choose File</label>
+            <input id="input_white_name" type="text" class="form-control" placeholder="Name">
+            <div id="div_white_engine" class="custom-file custom" style="display: none">
+              <input type="file" class="custom-file-input" id="input_white_engine">
+              <label class="custom-file-label" for="input_white_engine">Choose File</label>
             </div>
           </div>
         </div>
         <div class="col-4">
-          <h6 class="text-white">Player 2:</h6>
+          <h6 class="text-white">Black:</h6>
           <div class="input-group mb-1">
             <div class="input-group-prepend">
-              <button id="dropdown_player_2_type" class="btn btn-danger text-white dropdown-toggle" type="button" data-toggle="dropdown">Human</button>
+              <button id="dropdown_black_type" class="btn btn-danger text-white dropdown-toggle" type="button" data-toggle="dropdown">Human</button>
               <div class="dropdown-menu">
                 <a class="dropdown-item" onclick="switchPlayer2Human()">Human</a>
                 <a class="dropdown-item" onclick="switchPlayer2Engine()">Engine</a>
               </div>
             </div>
-            <input id="input_player_2_name" type="text" class="form-control" placeholder="Name">
-            <div id="div_player_2_engine" class="custom-file custom" style="display: none">
-              <input type="file" class="custom-file-input" id="input_player_2_engine">
-              <label class="custom-file-label" for="input_player_2_engine">Choose File</label>
+            <input id="input_black_name" type="text" class="form-control" placeholder="Name">
+            <div id="div_black_engine" class="custom-file custom" style="display: none">
+              <input type="file" class="custom-file-input" id="input_black_engine">
+              <label class="custom-file-label" for="input_black_engine">Choose File</label>
             </div>
           </div>
         </div>
@@ -77,11 +77,44 @@
     </div>
     <div class="container-fluid" style="position: absolute; top: 77px; bottom: 0">
       <div class="row h-100">
-        <div class="col-8 h-100">
-
+        <div class="col-8 h-100 mx-0">
+          <div class="row w-100 h-100 mx-0">
+            <img id="img_board" src="img/board.svg" style="display: none">
+          </div>
+          <div class="row w-100 bg-dark" style="position: absolute; bottom: 0">
+            <div class="col">
+              <div class="input-group my-3">
+                <div class="input-group-prepend">
+                  <div id="move_color" class="input-group-text bg-danger text-white">White</div>
+                </div>
+                <input id="input_move" class="form-control" type="text" placeholder="">
+                <div class="input-group-append">
+                  <button id="button_submit_move" type="button" class="btn btn-danger text-white">Next Move</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-4 h-100 bg-secondary">
+        <div class="col-4 mx-0 h-100 bg-secondary">
+          <div class="row bg-danger py-2">
+            <div class="col text-white">
+              White:
+            </div>
+            <div class="col text-dark">
+              Black:
+            </div>
+          </div>
+          <div class="row h-100 py-3" style="overflow: auto">
+            <div class="col">
 
+            </div>
+          </div>
+          <div class="row py-3 bg-dark w-100" style="position: absolute; bottom: 0">
+            <div class="col border-left border-light">
+              <button id="button_export_pgn" type="button" class="btn btn-danger text-white ml-3" style="float: right">Export</button>
+              <button id="button_undo_move" type="button" class="btn btn-danger text-white" style="float: right">Undo Move</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
