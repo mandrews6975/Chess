@@ -30,6 +30,11 @@ async function selectBlackEngine(){
   document.getElementById('input_black_engine').value = path;
 }
 
+function exportPGN(){
+  let pgn = document.getElementById('pgn_display').innerHTML;
+  eel.saveFile(pgn);
+}
+
 eel.expose(updateBoardDisplay);
 function updateBoardDisplay(url){
   document.getElementById('board_display').src = url;
@@ -40,6 +45,7 @@ function openMoveInput(curMove){
   document.getElementById('move_color').innerHTML = curMove.charAt(0).toUpperCase() + curMove.substring(1);
   document.getElementById('input_move').readOnly = false;
   document.getElementById('button_next_move').readOnly = false;
+  document.getElementById('button_hint').readOnly = false;
 }
 
 eel.expose(closeMoveInput);
@@ -47,6 +53,7 @@ function closeMoveInput(curMove){
   document.getElementById('move_color').innerHTML = curMove.charAt(0).toUpperCase() + curMove.substring(1);
   document.getElementById('input_move').readOnly = true;
   document.getElementById('button_next_move').readOnly = true;
+  document.getElementById('button_hint').readOnly = true;
 }
 
 async function nextMove(){
@@ -61,12 +68,33 @@ async function nextMove(){
   document.getElementById('input_move').focus();
 }
 
+async function getHint(){
+  let move = await eel.getHint()();
+  document.getElementById('input_move').value = move;
+}
+
 eel.expose(updatePgnDisplay)
 function updatePgnDisplay(pgn){
   document.getElementById('pgn_display').innerHTML = pgn;
 }
 
 eel.expose(endGame);
-function endGame(method){
+function endGame(){
+  document.getElementById('button_end_game').click();
+}
 
+function cancelSaveSettings(){
+  document.getElementById('input_white_engine_speed').value = 1.0;
+  document.getElementById('input_black_engine_speed').value = 1.0;
+}
+
+function saveSettings(){
+  let whiteEngSpeed = document.getElementById('input_white_engine_speed').value;
+  let blackEngSpeed = document.getElementById('input_black_engine_speed').value;
+  if(!isNaN(whiteEngSpeed) && !isNaN(blackEngSpeed)){
+    eel.setWhiteEngSpeed(whiteEngSpeed);
+    eel.setBlackEngSpeed(blackEngSpeed);
+  }else{
+    cancelSaveSettings();
+  }
 }

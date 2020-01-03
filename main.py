@@ -1,6 +1,6 @@
 import eel, platform, sys, datetime, urllib.request, urllib.parse, chess, chess.pgn, chess.engine
 from tkinter import Tk
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename, asksaveasfile
 
 eel.init("web")
 
@@ -14,9 +14,11 @@ board = None
 pgn = None
 node = None
 engine = chess.engine.SimpleEngine.popen_uci("C:\\Users\\Michael\\Documents\\stockfish\\Windows\\stockfish_10_x64.exe")
-engineTime = 1.0
+whiteEngSpeed = 1.0
+blackEngSpeed = 1.0
 whiteEngine = None
 blackEngine = None
+hint = None
 
 @eel.expose
 def startNewGame(wType, bType, wID, bID):
@@ -51,6 +53,7 @@ def startNewGame(wType, bType, wID, bID):
         global blackEngine
         blackEngine = chess.engine.SimpleEngine.popen_uci(blackID)
     if whiteType == "human":
+        genHint()
         eel.openMoveInput(curMove)
     else:
         makeEngineMove(whiteEngine)
@@ -59,6 +62,14 @@ def startNewGame(wType, bType, wID, bID):
 def selectFile():
     Tk().withdraw()
     return askopenfilename()
+
+@eel.expose
+def saveFile(contents):
+    Tk().withdraw()
+    path = asksaveasfile()
+    f = open(path.name, "w")
+    f.write(contents)
+    f.close()
 
 @eel.expose
 def testMove(move):
@@ -87,23 +98,20 @@ def submitMove(move):
         info = engine.analyse(board, chess.engine.Limit(depth=20))
         node.comment = "Score: " + str(info["score"].relative.score())
         curMove = "white"
-    eel.updatePgnDisplay(str(pgn))
     curMoveNum += 1
     # Check for continuation of game
-    if board.is_stalemate():
-        eel.endGame("stalemate")
-    elif board.is_insufficient_material():
-        eel.endGame("ins_material")
-    elif board.is_game_over():
-        eel.endGame("checkmate")
-    elif board.is_fivefold_repetition():
-        eel.endGame("ffr")
-    elif board.is_seventyfive_moves():
-        eel.endGame("75_moves")
+    if board.is_game_over():
+        updatePgnResult()
+        eel.updatePgnDisplay(str(pgn))
+        eel.endGame()
+        return
+    eel.updatePgnDisplay(str(pgn))
     # Handle next move
     if curMove == "white" and whiteType == "human":
+        genHint()
         eel.openMoveInput(curMove)
     elif curMove == "black" and blackType == "human":
+        genHint()
         eel.openMoveInput(curMove)
     elif curMove == "white" and whiteType == "engine":
         global whiteEngine
@@ -118,9 +126,13 @@ def makeEngineMove(enginePlayer):
     global pgn
     global node
     global engine
-    global engineTime
+    global whiteEngSpeed
+    global blackEngSpeed
     eel.closeMoveInput(curMove)
-    result = enginePlayer.play(board, chess.engine.Limit(time=engineTime))
+    if curMove == "white":
+        result = enginePlayer.play(board, chess.engine.Limit(time=whiteEngSpeed))
+    else:
+        result = enginePlayer.play(board, chess.engine.Limit(time=blackEngSpeed))
     board.push(result.move)
     updateBoardDisplay()
     # Update PGN and curMove
@@ -137,6 +149,12 @@ def makeEngineMove(enginePlayer):
         node.comment = "Score: " + str(info["score"].relative.score())
         curMove = "white"
     curMoveNum += 1
+    # Check for continuation of game
+    if board.is_game_over():
+        updatePgnResult()
+        eel.updatePgnDisplay(str(pgn))
+        eel.endGame()
+        return
     eel.updatePgnDisplay(str(pgn))(continueFromEngineMove)
 
 def continueFromEngineMove(x):
@@ -146,21 +164,12 @@ def continueFromEngineMove(x):
     global node
     global engine
     global engineTime
-    # Check for continuation of game
-    if board.is_stalemate():
-        eel.endGame("stalemate")
-    elif board.is_insufficient_material():
-        eel.endGame("ins_material")
-    elif board.is_game_over():
-        eel.endGame("checkmate")
-    elif board.is_fivefold_repetition():
-        eel.endGame("ffr")
-    elif board.is_seventyfive_moves():
-        eel.endGame("75_moves")
     # Handle next move
     if curMove == "white" and whiteType == "human":
+        genHint()
         eel.openMoveInput(curMove)
     elif curMove == "black" and blackType == "human":
+        genHint()
         eel.openMoveInput(curMove)
     elif curMove == "white" and whiteType == "engine":
         global whiteEngine
@@ -168,6 +177,38 @@ def continueFromEngineMove(x):
     else:
         global blackEngine
         makeEngineMove(blackEngine)
+
+def updatePgnResult():
+    global board
+    global pgn
+    global node
+    if board.is_game_over():
+        result = board.result()
+        pgn.headers["Result"] = result
+        node.comment += "Result: " + result
+        eel.updatePgnDisplay(str(pgn))
+
+def genHint():
+    global board
+    global engine
+    global hint
+    result = engine.play(board, chess.engine.Limit(time=1))
+    hint = result.move.uci()
+
+@eel.expose
+def getHint():
+    global hint
+    return hint
+
+@eel.expose
+def setWhiteEngSpeed(speed):
+    global whiteEngSpeed
+    whiteEngSpeed = float(speed)
+
+@eel.expose
+def setBlackEngSpeed(speed):
+    global blackEngSpeed
+    blackEngSpeed = float(speed)
 
 def updateBoardDisplay():
     global board
