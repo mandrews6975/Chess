@@ -25,3 +25,7 @@ function switchPlayer2Engine(){
 window.onresize = () => {
   window.resizeTo(1280, 720);
 }
+
+window.onscroll = () => {
+  window.scroll(0, 0);
+}

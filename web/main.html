@@ -10,6 +10,7 @@
     <script type="text/javascript" src="js/popper.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/game.js"></script>
   </head>
   <body>
     <div class="modal fade" id="modal_options_menu" tabindex="-1" role="dialog">
@@ -41,14 +42,13 @@
             <div class="input-group-prepend">
               <button id="dropdown_white_type" class="btn btn-danger text-white dropdown-toggle" type="button" data-toggle="dropdown">Human</button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" onclick="switchPlayer1Human()">Human</a>
-                <a class="dropdown-item" onclick="switchPlayer1Engine()">Engine</a>
+                <a class="dropdown-item" href="#" onclick="switchPlayer1Human()">Human</a>
+                <a class="dropdown-item" href="#" onclick="switchPlayer1Engine()">Engine</a>
               </div>
             </div>
             <input id="input_white_name" type="text" class="form-control" placeholder="Name">
             <div id="div_white_engine" class="custom-file custom" style="display: none">
-              <input type="file" class="custom-file-input" id="input_white_engine">
-              <label class="custom-file-label" for="input_white_engine">Choose File</label>
+              <input id="input_white_engine" type="text" class="form-control" placeholder="Select File" href=# onclick="selectWhiteEngine()" readonly>
             </div>
           </div>
         </div>
@@ -58,28 +58,27 @@
             <div class="input-group-prepend">
               <button id="dropdown_black_type" class="btn btn-danger text-white dropdown-toggle" type="button" data-toggle="dropdown">Human</button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" onclick="switchPlayer2Human()">Human</a>
-                <a class="dropdown-item" onclick="switchPlayer2Engine()">Engine</a>
+                <a class="dropdown-item" href="#" onclick="switchPlayer2Human()">Human</a>
+                <a class="dropdown-item" href="#" onclick="switchPlayer2Engine()">Engine</a>
               </div>
             </div>
             <input id="input_black_name" type="text" class="form-control" placeholder="Name">
             <div id="div_black_engine" class="custom-file custom" style="display: none">
-              <input type="file" class="custom-file-input" id="input_black_engine">
-              <label class="custom-file-label" for="input_black_engine">Choose File</label>
+              <input id="input_black_engine" type="text" class="form-control" placeholder="Select File" href=# onclick="selectBlackEngine()" readonly>
             </div>
           </div>
         </div>
         <div class="col-3">
           <br>
-          <button id="button_new_game" class="btn btn-danger text-white mb-0" type="button" style="float: right; width: 100%">New Game</button>
+          <button id="button_new_game" class="btn btn-danger text-white mb-0" type="button" onclick="startNewGame()" style="float: right; width: 100%">New Game</button>
         </div>
       </div>
     </div>
     <div class="container-fluid" style="position: absolute; top: 77px; bottom: 0">
       <div class="row h-100">
-        <div class="col-8 h-100 mx-0">
-          <div class="row w-100 h-100 mx-0">
-            <img id="img_board" src="img/board.svg" style="display: none">
+        <div class="col-8 h-100 w-100 mx-0">
+          <div class="row mx-0">
+            <img id="board_display" class="mx-auto my-4" src="" style="display: none; width: 60%">
           </div>
           <div class="row w-100 bg-dark" style="position: absolute; bottom: 0">
             <div class="col">
@@ -87,26 +86,25 @@
                 <div class="input-group-prepend">
                   <div id="move_color" class="input-group-text bg-danger text-white">White</div>
                 </div>
-                <input id="input_move" class="form-control" type="text" placeholder="">
+                <input id="input_move" class="form-control" type="text" placeholder="" readonly>
                 <div class="input-group-append">
-                  <button id="button_submit_move" type="button" class="btn btn-danger text-white">Next Move</button>
+                  <button id="button_next_move" type="button" class="btn btn-danger text-white" onclick="nextMove()" readonly>Next Move</button>
                 </div>
+                <script type="text/javascript">
+                  document.getElementById('input_move').addEventListener('keyup', (event) => {
+                    if(event.keyCode == 13){
+                      document.getElementById('button_next_move').click();
+                    }
+                  });
+                </script>
               </div>
             </div>
           </div>
         </div>
         <div class="col-4 mx-0 h-100 bg-secondary">
-          <div class="row bg-danger py-2">
-            <div class="col text-white">
-              White:
-            </div>
-            <div class="col text-dark">
-              Black:
-            </div>
-          </div>
           <div class="row h-100 py-3" style="overflow: auto">
             <div class="col">
-
+              <p id="pgn_display" class="p text-white" style="white-space: pre-line"></p>
             </div>
           </div>
           <div class="row py-3 bg-dark w-100" style="position: absolute; bottom: 0">
